@@ -1,0 +1,77 @@
+#include <iostream>
+#define SIZE 7
+using namespace std;
+signed int arr[SIZE] = {};
+
+
+int main()
+{
+	int n = 0;
+	int m = SIZE - 1;
+	int max = 0;
+	char option;
+	int x;
+	int index;
+	cout << "You can use only 5 characters: A,B,M,P,Q\n" << " A: will sign number to array from left \n B: will do same from right \n M: will give you the index of highest given number \n P: will write the array on the screen. \n Q is exit from the program\n";
+	for (;;)
+	{
+		cin >> option;
+		;
+		if (option != 'Q')
+		{
+			switch (option)
+			{
+			case 'A':
+				if (n > SIZE || n > m) {
+					cout << "array is full, this number will not be in array:";
+					break;
+				}
+				else {
+					cin >> x;
+					arr[n] = x;
+					n++;
+				}
+				break;
+			case 'B':
+				if (n > SIZE || n > m) {
+					cout << "array is full, this number will not be in array:";
+					break;
+				}
+				else {
+					cin >> x;
+					arr[m] = x;
+					m--;
+				}
+				break;
+			case 'P':
+				cin >> x;
+				for (int i = 0; i < SIZE; i += x)
+				{
+					if (i < n || i >m)
+						cout << arr[i] << " ";
+				}
+				cout << endl;
+				break;
+			case 'M':
+
+				for (int i = 0; i < SIZE; i++) {
+					if (arr[i] > max) {
+						max = arr[i];
+						index = i;
+					}
+				}
+				cout << index - 1;
+				max = 0;
+				break;
+			default:
+				cout << " " << option << endl;
+
+				break;
+			}
+
+		}
+		else
+			return 1;
+	}
+	return 0;
+}
