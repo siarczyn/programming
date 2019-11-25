@@ -1,3 +1,5 @@
+/*Author: Kacper Wereszko*/
+/*Modified by: Robert Ostrowski and Kacper Wereszko*/
 #include <iostream>
 #include <time.h>
 #define SIZE 10
@@ -11,7 +13,22 @@ using namespace std;
 #pragma warning (disable : 4996)
 #endif
 //
-
+bool load_file(int field[][SIZE], char* name){
+	FILE *f;
+	f = fopen(name, "r");
+	if (f != NULL)
+	{
+		for (int i = 0; i < SIZE; i++)
+		{
+			for (int j = 0; j < SIZE; j++) {
+			//	fprintf(f, "%d", field[i][j]);
+				fscanf(f, "%d", &field[i][j]);
+			}
+		}fclose(f);
+		return true;
+	}
+	return false;
+};
 bool save_file(int field[][SIZE], char* name) 
 {
 	FILE *f;
@@ -21,8 +38,8 @@ bool save_file(int field[][SIZE], char* name)
 		for (int i = 0; i < SIZE; i++)
 		{
 			for (int j = 0; j < SIZE; j++) {
-				fprintf(f, "%d",  field[i][j]);
-			}
+				fprintf(f, "%3d",  field[i][j]);
+			 } fprintf(f,"\n")
 		}fclose(f);
 		return true;
 	}
@@ -146,7 +163,11 @@ int main(int argc, char* argv[]) {
 				cout << "Miss" << endl;
 			break;
 		case '2':
-			cout << "NOT IMPLEMENTED YET" << endl;
+			cin >> name;
+			if (load_file(field, name))
+				cout << "Loaded" << endl;
+			else
+				cout << "Error" << endl;
 			break;
 		case '3':
 			cin >> name;
@@ -168,4 +189,6 @@ int main(int argc, char* argv[]) {
 	}
 
 	system("pause");
+
+
 }
