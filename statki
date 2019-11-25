@@ -1,0 +1,171 @@
+#include <iostream>
+#include <time.h>
+#define SIZE 10
+#define EMPTY_FIELD '*'
+
+using namespace std;
+
+//VisualStudio compatibility 
+#ifdef _MSC_VER 
+#define _CRT_SECURE_NO_DEPRECATE 
+#pragma warning (disable : 4996)
+#endif
+//
+
+bool save_file(int field[][SIZE], char* name) 
+{
+	FILE *f;
+	f = fopen(name, "w");
+	if (f != NULL)
+	{      
+		for (int i = 0; i < SIZE; i++)
+		{
+			for (int j = 0; j < SIZE; j++) {
+				fprintf(f, "%d",  field[i][j]);
+			}
+		}fclose(f);
+		return true;
+	}
+	return false;
+};
+void fill_field(int field[][SIZE]) {
+	for (int i = 0; i < SIZE; i++)
+		for (int j = 0; j < SIZE; j++)
+			field[i][j] = 0;
+}
+//check if the ship can be placed on the position - if not, return false
+bool check_position(int field[][SIZE], int ship_size, int direction, int x, int y) {
+	for (int i = 0; i < ship_size; i++) {
+		if (x >= SIZE)
+			return false;
+		if (y >= SIZE)
+			return false;
+		if (field[y][x] != 0)
+			return false;
+		if (direction)
+			y++;
+		else
+			x++;
+	}
+	return true;
+}
+
+void place_ship(int field[][SIZE], int ship_size, int direction, int x, int y) {
+	for (int i = 0; i < ship_size; i++) {
+		field[y][x] = -ship_size; //by default ships are covered
+		if (direction)
+			y++;
+		else
+			x++;
+	}
+}
+
+void print_field(int field[][SIZE], int cheat) {
+	cout << "   ";
+	for (int i = 0; i < SIZE; i++)
+		cout << (char)(i + 'A');
+	cout << endl;
+	for (int i = 0; i < SIZE; i++) {
+		cout << i << " |";
+		for (int j = 0; j < SIZE; j++) {
+			if (cheat) {		//all ships uncovered
+				if (field[i][j] == 0)
+					cout << EMPTY_FIELD;
+				else
+					cout << (char)(abs(field[i][j]) + '0');
+			}
+			else {			//some ships covered
+				if (field[i][j] <= 0)
+					cout << EMPTY_FIELD;
+				else
+					cout << (char)(field[i][j] + '0');
+			}
+		}
+		cout << endl;
+	}
+}
+
+bool shoot(int field[][SIZE], int x, int y) {
+	if (field[y][x] == 0)
+		return false;
+	else {
+		field[y][x] = abs(field[y][x]); //uncover a hit ship
+		return true;
+	}
+}
+
+
+
+int main(int argc, char* argv[]) {
+	srand(time(NULL));
+	int field[SIZE][SIZE];
+	fill_field(field);
+	/*We need to RANDOMLY place our ships on the field:
+	4 ships of size 1
+	3 ships of size 2
+	2 ships of size 3
+	1 ship of size 4
+	*/
+	for (int ship_size = 1; ship_size <= 4; ship_size++) {
+		int ship_count = 5 - ship_size;
+		for (int j = 1; j <= ship_count; j++) {
+			int direction, x, y;
+			do {
+				//get a random number for a direction of the ship
+				//0 - horizontal, 1 - vertical
+				direction = rand() % 2;
+				//choose randomly a position of the ship
+				x = rand() % SIZE;
+				y = rand() % SIZE;
+			} while (!check_position(field, ship_size, direction, x, y));
+			//now we just need to place our ship on the field
+			place_ship(field, ship_size, direction, x, y);
+
+		}
+	}
+	print_field(field, 1);
+	int x, y;
+	char option;
+	bool exit = false;
+	char name[20];
+	while (!exit)
+	{
+		cout << "Choose an option:" << endl;
+		cout << "1 - shoot" << endl;
+		cout << "2 - load a game board from a file" << endl;
+		cout << "3 - save game" << endl;
+		cout << "4 - end" << endl;
+		cin >> option;
+		switch (option) {
+		case '1':
+			cout << "Enter row and column to shoot: ";
+			cin >> y >> x;
+			if (shoot(field, x, y))
+				cout << "Hit" << endl;
+			else
+				cout << "Miss" << endl;
+			break;
+		case '2':
+			cout << "NOT IMPLEMENTED YET" << endl;
+			break;
+		case '3':
+			cin >> name;
+			if (save_file(field,  name)) {
+				cout << "Saved" << endl;
+			}
+			else
+			{
+				cout << "error" << endl;
+			}
+			
+		case '4':
+			exit = true;
+			break;
+		default:
+			cout << "Invalid option!" << endl;
+		}
+		print_field(field, 0);
+	}
+
+	system("pause");
+}
